@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuestionario Aduanero Interactivo</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f9f9f9; }
+  .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+  .question { margin-bottom: 20px; font-weight: bold; }
+  .option { margin-bottom: 10px; }
+  .timer { font-weight: bold; color: red; margin-bottom: 20px; }
+  .button { padding: 10px 20px; margin-top: 20px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 5px; }
+  .button:hover { background-color: #0056b3; }
+  #results { margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Cuestionario Aduanero</h1>
+<div id="quiz"></div>
+<div id="results"></div>
+</div>
+<script>
+const questions = [
+  { enunciado: 'En el desarrollo de sus funciones al interior de la entidad, debe colaborar con la verificación y seguimiento de procesos de exportación, razón por la cual debe conocer la secuencia de cada proceso.', question: 'Con referencia al inicio del trámite de exportación se debe:', options: ['A. Establecer que el trámite de una exportación inicia con la presentación de la declaración de exportación.', 'B. Indicar que el trámite inicia con la solicitud de permisos.', 'C. Identificar que inicia con la solicitud de autorización de embarque a través de los servicios electrónicos de la DIAN.'], correct: 2 },
+  
+  { enunciado: 'Conforme al caso anterior, después de autorizado el embarque, embarcada la mercancía y certificado el embarque por parte del transportador, se debe:', question: '¿Qué debe hacer el declarante?', options: ['A. Indicar que el declarante deberá presentar la declaración de exportación correspondiente.', 'B. Explicar que se debe realizar la presentación y aceptación, de la solicitud de autorización de embarque.', 'C. Esperar la autorización por parte de la DIAN, sobre la consecución del segundo paso exportador.'], correct: 0 },
+
+  { enunciado: 'Conforme al caso anterior, con referencia a la solicitud de autorización de embarque se debe:', question: '¿Qué debe entenderse?', options: ['A. La solicitud de autorización de embarque podrá realizarse como embarque único, con datos fraccionados.', 'B. La solicitud de autorización de embarque únicamente podrá realizarse como embarque fraccionado.', 'C. La solicitud de autorización de embarque podrá realizarse como embarque único, con datos definitivos o provisionales, o podrá efectuarse en forma global con embarques fraccionados.'], correct: 2 },
+
+  { enunciado: 'Conforme al caso anterior, con referencia a los documentos soporte de la solicitud de autorización de embarque, se debe:', question: '¿Cuánto tiempo debe conservar el declarante los documentos?', options: ['A. El declarante está obligado a conservar por un período de cinco (5) años.', 'B. El declarante está obligado a conservar por un período de diez (10) años.', 'C. El declarante está obligado a conservar por un período de quince (15) años.'], correct: 0 },
+
+  { enunciado: 'Conforme al caso anterior, con referencia a las mercancías que se exporten por vía marítima se debe:', question: '¿Qué debe entenderse por zona primaria aduanera?', options: ['A. Las instalaciones del puerto o muelle de servicio público o privado, por donde se embarcarán las mercancías.', 'B. Los lugares que determine la autoridad aduanera.', 'C. Cualquier lugar que seleccione el exportador.'], correct: 0 },
+
+  { enunciado: 'Conforme al caso anterior, con referencia a las mercancías que se exporten por vía terrestre se debe:', question: '¿Qué debe determinar la autoridad aduanera?', options: ['A. Las instalaciones del puerto seco inicial, público o privado.', 'B. Los lugares seleccionados por el operador logístico.', 'C. Los lugares que la autoridad aduanera de la jurisdicción de salida determine como zona primaria aduanera.'], correct: 2 },
+
+  { enunciado: 'Conforme al caso anterior, si el medio de transporte no está disponible para el cargue inmediato se debe:', question: '¿Qué debe hacer el exportador?', options: ['A. El exportador deberá ordenar el ingreso de la mercancía a un depósito habilitado.', 'B. La mercancía deberá esperar en el sitio primario hasta que exista disponibilidad.', 'C. La autoridad aduanera ordenará el ingreso de la mercancía a un depósito habilitado.'], correct: 2 },
+
+  { enunciado: 'Conforme al caso anterior, cuando las mercancías deban embarcarse por una aduana diferente a aquella en donde se presente y acepte la solicitud de autorización de embarque, se debe:', question: '¿Qué debe hacer el declarante?', options: ['A. Tramitar la autorización en la dirección seccional de aduanas que tenga jurisdicción en el lugar donde se encuentre la mercancía.', 'B. Tramitar la autorización en la dirección seccional de aduanas de salida final.', 'C. Iniciar desde el inicio el proceso de solicitud de embarque.'], correct: 0 },
+
+  { enunciado: 'Conforme a la definición de exportación temporal, se debe:', question: '¿Qué sucede si las mercancías bajo esta modalidad se exportan definitivamente?', options: ['A. La modalidad ha iniciado.', 'B. La modalidad ha terminado.', 'C. Solo podrá exportarse el 50% o menos.'], correct: 1 },
+
+  { enunciado: 'Conforme al caso anterior, si el exportador presenta documentación incompleta o incorrecta, la autoridad aduanera podrá:', question: '¿Qué podrá hacer la autoridad?', options: ['A. Imponer sanciones y permitir que la mercancía sea embarcada con los documentos corregidos.', 'B. Imponer sanciones sin permitir embarque hasta que la documentación esté completa.', 'C. Permitir el embarque de la mercancía, pero solo bajo una autorización especial.'], correct: 1 },
+
+  { enunciado: 'En caso de que el exportador no cumpla con la normativa para la exportación de mercancías perecederas, se debe:', question: '¿Qué sanción podría recibir?', options: ['A. Sanción monetaria únicamente.', 'B. Suspensión de las licencias para exportar mercancías de ese tipo por un período de 3 años.', 'C. Confiscación de la mercancía y multa adicional.'], correct: 2 },
+
+  { enunciado: 'Cuando se realiza una exportación y el valor de la mercancía supera las 50,000 UVT, se debe:', question: '¿Qué debe hacer el exportador?', options: ['A. Realizar un trámite adicional en la DIAN para la verificación de la mercancía.', 'B. Declarar el valor en la declaración de exportación de forma detallada.', 'C. Pagar el valor total en aranceles antes de embarcar la mercancía.'], correct: 1 },
+
+  { enunciado: 'En cuanto a los plazos para realizar las declaraciones aduaneras de exportación, se debe:', question: '¿Cuánto tiempo tiene el exportador para completar el trámite?', options: ['A. 48 horas antes del embarque.', 'B. Hasta el día previo a la salida de la mercancía del país.', 'C. No hay plazo, solo debe realizarse antes de que la mercancía cruce la frontera.'], correct: 0 },
+
+  { enunciado: 'Cuando se realiza un embarque por la vía aérea, el transportador tiene la obligación de:', question: '¿Qué debe hacer el transportador?', options: ['A. Informar a la DIAN sobre el estado del embarque en tiempo real.', 'B. Presentar un manifiesto de carga a la DIAN antes del vuelo.', 'C. Presentar la factura comercial de la mercancía al momento del embarque.'], correct: 1 },
+
+  { enunciado: 'El valor de la mercancía para la exportación, de acuerdo con la normatividad, debe declararse:', question: '¿Cómo debe ser declarado el valor?', options: ['A. Siempre en el monto exacto acordado entre exportador e importador.', 'B. Según el precio de mercado en el país de origen, sin necesidad de detalle.', 'C. Basado en los valores de factura y con una declaración detallada que justifique el valor final de la mercancía.'], correct: 2 },
+
+  { enunciado: 'Cuando las mercancías no cumplen con las normativas sanitarias y fitosanitarias al momento de la exportación, la autoridad aduanera podrá:', question: '¿Qué medida podría tomar?', options: ['A. Permitir la exportación bajo condiciones especiales.', 'B. Suspender el embarque hasta que se resuelvan las observaciones.', 'C. Permitir la exportación pero sin cobertura del seguro de transporte.'], correct: 1 },
+
+  // Aquí continuarías agregando las otras preguntas siguiendo el mismo formato.
+];
+
+let currentQuestion = 0;
+let score = 0;
+let doubts = [];
+let incorrectQuestions = [];
+let timer;
+
+function startTimer() {
+  let timeLeft = 90;
+  const timerElement = document.getElementById('timer');
+  timerElement.innerText = `⏳ Tiempo restante: ${timeLeft} segundos`;
+  timer = setInterval(() => {
+    timeLeft--;
+    timerElement.innerText = `⏳ Tiempo restante: ${timeLeft} segundos`;
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      nextQuestion();
+    }
+  }, 1000);
+}
+
+function showQuestion() {
+  clearInterval(timer);
+  const quizDiv = document.getElementById('quiz');
+  if (currentQuestion >= questions.length) {
+    showResults();
+    return;
+  }
+  const q = questions[currentQuestion];
+  quizDiv.innerHTML = `
+    <div class="timer" id="timer"></div>
+    <div class="question">${q.enunciado ? '<p>' + q.enunciado + '</p>' : ''}<p>${q.question}</p></div>
+    ${q.options.map((opt, index) => `<div class="option"><input type="radio" name="option" value="${index}"> ${opt}</div>`).join('')}
+    <button class="button" onclick="submitAnswer()">Responder</button>
+    <button class="button" style="background-color: #6c757d;" onclick="markDoubt()">Marcar como duda</button>
+  `;
+  startTimer();
+}
+
+function submitAnswer() {
+  const selected = document.querySelector('input[name="option"]:checked');
+  if (selected) {
+    if (parseInt(selected.value) === questions[currentQuestion].correct) {
+      score++;
+    } else {
+      incorrectQuestions.push(currentQuestion);
+    }
+    currentQuestion++;
+    showQuestion();
+  } else {
+    alert("¡Por favor selecciona una opción!");
+  }
+}
+
+function markDoubt() {
+  doubts.push(currentQuestion);
+  submitAnswer();
+}
+
+function showResults() {
+  clearInterval(timer);
+  const quizDiv = document.getElementById('quiz');
+  const resultsDiv = document.getElementById('results');
+  quizDiv.innerHTML = "<h2>Cuestionario Finalizado</h2>";
+  resultsDiv.innerHTML = `<p>✅ Tu puntuación fue <strong>${score}</strong> de <strong>${questions.length}</strong>.</p>
+    <p>❌ Preguntas incorrectas: ${incorrectQuestions.length > 0 ? incorrectQuestions.map(i => i + 1).join(', ') : 'Ninguna'}</p>
+    <p>❔ Preguntas marcadas con duda: ${doubts.length > 0 ? doubts.map(i => i + 1).join(', ') : 'Ninguna'}</p>
+    <button class="button" onclick="retryErrors()">🔁 Repetir preguntas falladas o dudas</button>`;
+}
+
+function retryErrors() {
+  const errorSet = new Set([...incorrectQuestions, ...doubts]);
+  if (errorSet.size === 0) {
+    alert("¡No hay preguntas falladas o marcadas con duda para repetir!");
+    return;
+  }
+  const retryQuestions = Array.from(errorSet).map(index => questions[index]);
+  questions.length = 0;
+  questions.push(...retryQuestions);
+  currentQuestion = 0;
+  score = 0;
+  doubts = [];
+  incorrectQuestions = [];
+  showQuestion();
+}
+
+showQuestion();
+</script>
+</body>
+</html>
